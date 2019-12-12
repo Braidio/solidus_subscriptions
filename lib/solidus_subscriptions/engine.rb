@@ -39,6 +39,14 @@ module SolidusSubscriptions
       end
     end
 
+    initializer 'add subscribable to variants API attributes' do
+      new_variant_attribs = Spree::Api::ApiHelpers.variant_attributes + [:subscribable]
+      Spree::Api::ApiHelpers.class_variable_set(
+        '@@variant_attributes',
+        new_variant_attribs
+      )
+    end
+
     def self.activate
       Dir.glob(File.join(File.dirname(__FILE__), '../../app/decorators/**/*.rb')) do |c|
         Rails.configuration.cache_classes ? require(c) : load(c)
