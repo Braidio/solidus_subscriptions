@@ -1,7 +1,12 @@
 class SolidusSubscriptions::Api::V1::SubscriptionsController < Spree::Api::BaseController
-  before_action :load_subscription, only: [:cancel, :update, :skip]
+  before_action :load_subscription,  only: [:cancel, :update, :skip]
+  before_action :load_subscriptions, only: [:index]
 
   protect_from_forgery unless: -> { request.format.json? }
+
+  def index
+    render json: @subscriptions.to_json(include: [:line_items, :shipping_address])
+  end
 
   def update
     if @subscription.update(subscription_params)
@@ -31,6 +36,10 @@ class SolidusSubscriptions::Api::V1::SubscriptionsController < Spree::Api::BaseC
 
   def load_subscription
     @subscription = current_api_user.subscriptions.find(params[:id])
+  end
+
+  def load_subscriptions
+    @subscriptions = current_api_user.subscriptions
   end
 
   def subscription_params
